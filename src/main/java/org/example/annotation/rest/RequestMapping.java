@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RequestMapping {
 
-    String path();
+    String path() default "";
     String method() default "GET";
 }

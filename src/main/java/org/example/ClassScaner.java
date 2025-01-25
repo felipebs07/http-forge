@@ -17,7 +17,7 @@ public class ClassScaner {
         URL resource = classLoader.getResource(path);
 
         if(resource == null) {
-            throw new Exception("Package not found" + packageName);
+            throw new Exception("Package not found: " + packageName);
         }
 
         File directory = new File(resource.getFile());

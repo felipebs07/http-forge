@@ -2,29 +2,39 @@ package org.example.annotation;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.example.ClassScaner;
+import org.example.annotation.rest.Controller;
 import org.example.annotation.rest.RequestMapping;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * HttpHandle é parte do sun.net.httpserver, ela é responsável por manipular request http recebida pelo servidor.
  */
 public class AnnotationHandler implements HttpHandler {
-
-
     private final Map<String, Method> routerHandlers = new HashMap<>();
 
+    public void scanControllers(String packageName) throws Exception {
+        List<Class<?>> controllerClasses = ClassScaner.findClasses(packageName);
+        for(Class<?> clasz : controllerClasses) {
+            registerController(clasz.getDeclaredConstructor().newInstance());
+        }
+    }
+
     public void registerController(Object controller) {
-       for(Method method: controller.getClass().getDeclaredMethods()) {
+        Class<?> clasz = controller.getClass();
+        String pathController = clasz.getDeclaredAnnotation(Controller.class).path();
+       for(Method method: clasz.getDeclaredMethods()) {
           if(method.isAnnotationPresent(RequestMapping.class)) {
               RequestMapping annotation = method.getAnnotation(RequestMapping.class);
-              String path = annotation.path();
-              String httpMethod = annotation.method().toUpperCase();
 
+              String path = pathController + annotation.path();
+              String httpMethod = annotation.method().toUpperCase();
               routerHandlers.put(httpMethod + " " + path, method);
           }
        }

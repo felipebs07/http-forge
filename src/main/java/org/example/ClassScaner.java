@@ -5,10 +5,13 @@ import org.example.annotation.rest.Controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public class ClassScaner {
+    private static final HashMap<String, String> mapRouter = new HashMap<>();
+
     public static List<Class<?>> findClasses(String packageName) throws Exception {
         List<Class<?>> classes = new ArrayList<>();
         String path = packageName.replace(".", "/");
@@ -29,6 +32,12 @@ public class ClassScaner {
                     Class<?> clasz = Class.forName(className);
 
                     if(clasz.isAnnotationPresent(Controller.class)) {
+                        String pathController = clasz.getDeclaredAnnotation(Controller.class).path();
+                        if(mapRouter.containsKey(pathController)) {
+                            throw new Exception("Router duplicate identify: " + pathController);
+                        }
+
+                        mapRouter.put(pathController, clasz.getName());
                         classes.add(clasz);
                     }
                 }

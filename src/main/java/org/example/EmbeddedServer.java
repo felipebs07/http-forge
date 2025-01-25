@@ -12,7 +12,7 @@ public class EmbeddedServer {
     public void start(int port) throws Exception {
         server = HttpServer.create(new InetSocketAddress(port), 0);
         AnnotationHandler handler = new AnnotationHandler();
-        handler.scanControllers("org.example.controller");
+        handler.scanControllers("org.example");
         server.createContext("/", handler);
         server.start();
         System.out.println("\n" +
